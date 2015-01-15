@@ -1,4 +1,4 @@
-function [h,p,c,c_n] = myHist(img)
+function [p,h,c,c_n] = myHist(img)
 %MYHIST Calculates the histogram of an image
 
 [n,m] = size(img);
