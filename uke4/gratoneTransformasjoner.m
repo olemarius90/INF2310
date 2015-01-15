@@ -6,7 +6,7 @@ f = imread('pout.tif');
 [n,m] = size(f);
 
 % Bruker vår funksjon myHist til å finne histogrammet
-[h,p,c,c_n] = myHist(f);
+[p,h,c,c_n] = myHist(f);
 
 % Vi plotter resultatene
 figure(1)
@@ -165,7 +165,21 @@ bar(myHist(f));
 subplot(224)
 bar(myHist(g));
 
-%Show a ultrasound image as well
+%%
+load UltrasoundImageSim
+figure(7)
+subplot(221)
+imshow(us_image,[]);
+title('Simulated ultrasound image');
+colorbar
+subplot(222)
+imshow(20*log10(us_image),[])
+title('Log transform of ultrasound image');
+colorbar
+subplot(223)
+bar(myHist(uint8(us_image)));
+subplot(224)
+bar(myHist(uint8(20*log10(us_image))));
 
 %% "Power-law" (gamma)-transformasjoner
 gamma = 1.09;
@@ -184,10 +198,10 @@ bar(myHist(g));
 
 %% Bit-plan oppdeling
 
-layer = 8;
+layer = 7;
 for i = 1:n
     for j = 1:m
-        out(i,j) = bitand(f(i,j),2^layer);
+        out(i,j) = bitand(f(i,j),uint8(2^layer));
     end
 end
 
