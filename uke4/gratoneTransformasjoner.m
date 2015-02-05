@@ -6,16 +6,19 @@
 % Skrevet av Ole Marius Hoel Rindal
 % Vennligst gi beskjed til olemarius@olemarius.net om du finner feil eller
 % mangler i koden.
+%
+% NB! Veldig mye av koden er kun kode for å vise frem bilder og histogram.
+% Denne koden er kun kopiert videre og bør muligens flyttes i en funksjon.
 
 %%  Histogram
-%   Et histogram og da menes her et gråtonehistgram til et bilde er en
+%   Et histogram, og da menes her et gråtonehistgram, til et bilde er en
 %   diskret funksjon som viser antall piksler med hver gråtone.
 %
 %   Altså vil et histogram h være slik at h(i) indikerer antall piksler i
 %   bildet med pikselverdi i.
 %
 %   I den følgende koden vil vi anta at vi har bilder med 256 forskjellige
-%   gråtoner.
+%   gråtoner, fra gråtone 0 til gråtone 255.
 clear all
 close all
 
@@ -195,7 +198,6 @@ title('Histgram etter transformasjon')
 %   (1. orden). Dette gjør vi ved å justere middelverdien og variansen til
 %   bildet ved hjelp av en lineær gråtonetransform.
 
-
 %   Først finner vi middelverdi av gråtonene
 
 %   Bruker enkel MATLAB mean til å finne middelverdien
@@ -279,110 +281,278 @@ var(double(g(:)))
 %%  Ikke-lineære trasformer 
 %   Vi skal nå se på ikke-lineære trasformasjoner, og begynnver ved å se på
 %   logaritmiske transformasjoner.
-
-x = 0:255;
+clear g
+input = 1:255;
 
 r = 0;
 c = 46;
 
-figure(66)
-clf
-plot(x/max(x))
-hold on
-plot(c*log(x+r)/max(c*log(x+r)),'r')
-plot(x.^(1/2)/max(x.^(1/2)),'g');
-plot(x.^(2)/max(x.^(2)),'y');
-g = uint8(40*log(double(1+f)));
+%   Finner max og min i orignal bildet
+f1 = min(f(:));
+f2 = max(f(:));
 
+%   Bestemmer max og min i det nye intervallet
+g1 = 0;
+g2 = 255;
+
+%Logaritmen
+log_t = log(input+r);
+%Normaliserer, legg merke til at dette er det samme som når vi endret
+%intervallet
+log_t = g1 + ((g2-g1)/(max(log_t(:))-min(log_t(:))))*(log_t-min(log_t(:)));
+
+%n'te rot
+root_t = sqrt(input);
+root_t = g1 + ((g2-g1)/(max(root_t(:))-min(root_t(:))))*(root_t-min(root_t(:)));
+
+%n'te potens
+potens_t = input.^(2);
+potens_t = g1 + ((g2-g1)/(max(potens_t(:))-min(potens_t(:))))*(potens_t-min(potens_t(:)));
+
+%inverse log
+invlog_t = exp(input/50);
+invlog_t = g1 + ((g2-g1)/(max(invlog_t(:))-min(invlog_t(:))))*(invlog_t-min(invlog_t(:)));
+
+%Viser frem de forskjellige transformasjonene
 figure(6)
-subplot(221)
-imshow(f,[0 255]);
-subplot(222)
-imshow(g,[0 255]);
-subplot(223)
-bar(myHist(f));
-subplot(224)
-bar(myHist(g));
+clf
+plot(input)
+hold all
+plot(log_t)
+plot(root_t)
+plot(potens_t)
+plot(invlog_t);
+xlabel('Input gratone')
+ylabel('Output gratone')
+legend('Identitet','Logaritme','n-te rot','n-te potens','invers logaritme','Location','NW');
 
-%%
-load UltrasoundImageSim
+%   Bruker så log transformasjonen på bildet
+%   Her bruker vi en såkalt LUT, (look-up-table) implementasjon hvor vi
+%   slår opp i transformasjonen vår og ser (look up) hvilke intensitet vi
+%   skal ha ut for den aktuelle inngangs intensitete f(x,y). Dette gjøres
+%   for alle x og y.
+for x = 1:m
+    for y = 1:m
+        g(x,y) = log_t(f(x,y));
+    end
+end
+
+%Viser frem resultatet
 figure(7)
 subplot(221)
-imshow(us_image,[]);
-title('Simulated ultrasound image');
-colorbar
+imshow(f,[0 255]);
+title('Original');
 subplot(222)
-imshow(20*log10(us_image),[])
-title('Log transform of ultrasound image');
-colorbar
-subplot(223)
-bar(myHist(uint8(us_image)));
-subplot(224)
-bar(myHist(uint8(20*log10(us_image))));
-
-%% "Power-law" (gamma)-transformasjoner
-gamma = 1.09;
-c = 1;
-g = uint8(c*double(f).^gamma);
-
-figure(8)
-subplot(221)
-imshow(f,[0 2^8]);
-subplot(222)
-imshow(g,[0 2^8]);
+imshow(g,[0 255]);
+title('Etter log transform');
 subplot(223)
 bar(myHist(f));
+xlabel('Gratone');
+ylabel('Antall piksler');
+title('Orginal histogram')
 subplot(224)
-bar(myHist(g));
+bar(myHist(uint8(g)));
+xlabel('Gratone');
+ylabel('Antall piksler');
+title('Histogram etter transformasjon')
+
+%%  Ultralydbilde
+%   I ultralydavbildning er det vanlig å se på bildet i DB (Desibel). 
+%   Dette er i prinsippet kun en log transformasjon, og tar derfor med et
+%   bilde jeg har simulert i Field II med som et eksempel.
+load UltrasoundImageSim
+
+%   Bestemmer max og min i det nye intervallet
+g1 = 0;
+g2 = 255;
+
+%   Her finner vi DB av bildet (legger også til minimum for å kun ha
+%   positive verdier)
+img = uint8(20*log10(us_image)+abs(min(20*log10(us_image(:)))));
+
+%   Vi skal sepå bildet i to versjoner, ett hvor bildet er i DB (slik det
+%   vanligvis er i ultralydavbildning) og ett bildet hvor vi har endret
+%   gråtonenivået.
+%   img = bildet i DB
+%   g = DB bildet transformert til å dekke hele gråtonenivået
+
+%   Finner max og min i original bildet
+f1 = min(img(:));
+f2 = max(img(:));
+
+%   Normaliserer bildet fra DB til 0 - 255 i gråtoner.
+g = g1 + ((g2-g1)/(f2-f1))*(img-f1);
+
+figure(8)
+subplot(231)
+imshow(us_image,[0 255]);
+title('Simulert ultralyd bilde');
+colorbar
+subplot(232)
+imshow(g,[0 255])
+title('Logtransform (20*log10) / Decibel transformasjon');
+colorbar
+subplot(233)
+imshow(img,[]);
+title('Logtransform (20*log10) / Decibel transformasjon');
+colorbar
+subplot(234)
+bar(myHist(uint8(us_image)));
+xlabel('Gratone');
+ylabel('Antall piksler');
+title('Orginal histogram')
+subplot(235)
+bar(myHist(uint8(g)));
+xlabel('Gratone');
+ylabel('Antall piksler');
+title('Histogram etter DB transformasjon')
+clear g
+
+
+
+%%  "Power-law" (gamma)-transformasjoner
+%   En mer generell måte og lage ikke-lineære tranformasjoner på er såkalte
+%   gamma-transformasjoner. Disse kan skrives: s = c*i^gamma hvor s er
+%   ut-intensiteten, i er input, c er en skalar og gamma typisk variabelen
+%   vi varierer. Dette gir en transformasjon det er lett å forholde seg
+%   til, siden vi kun trenger å endre en variabel for å få forskjellige
+%   resultat.
+
+%   Vi begynner ved å velge noen verdier for gamma
+gamma = [0.01 0.5 1 2 3 4];
+c = 1;  %Velger å sette skalaren c til verdien 1.
+
+%   Regner så ut og plotter de forskjellige transformasjonene
+figure(9)
+clf
+hold all
+for i = 1:length(gamma)
+    t{i} = (c*double(input).^gamma(i));
+    t{i} = g1 + ((g2-g1)/(max(t{i}(:))-min(t{i}(:))))*(t{i}-min(t{i}(:)));
+    plot(t{i})
+    legendTxt{i} = ['gamma=',num2str(gamma(i))];
+end
+ylabel('Input gratone');
+xlabel('Output gratone');
+title('"Power-law" gamma-transformasjoner');
+legend(legendTxt,'Location','NW');
+
+%   Bruker her også LUT. Se tidligere beskrivelse
+%   Her kan vi velge hvilke av transformasjonene ved å velge forskjellig
+%   t{i} 
+for x = 1:n
+    for y = 1:m
+        g(x,y) = t{5}(f(x,y));
+    end
+end
+
+%   Plotter resultatet
+figure(10)
+clf
+subplot(221)
+imshow(f,[0 255]);
+title('Orginal');
+subplot(222)
+imshow(g,[0 255]);
+title('Etter gamma-transformasjon');
+subplot(223)
+bar(myHist(f));
+xlabel('Gratone');
+ylabel('Antall piksler');
+title('Orginal histogram')
+subplot(224)
+bar(myHist(uint8(g)));
+xlabel('Gratone');
+ylabel('Antall piksler');
+title('Orginal histogram')
 
 %%  Stykkvis lineær mapping
-%   Verifiser at dette er en korrekt implementasjon
+%   Stykkvis lineær mapping er en transformasjon som er "stykkvis" lineær. 
+%   Her er det implementert en to-delt transformasjon hvor vi velger 
+%   stigningstallet for første del opptil valgt gråtone, for a. Resten av
+%   transformasjonen stiger så jevnt til øverste gråtone 255. Dette kan
+%   selvfølgelig gjøres på mange måter.
+
+%   Laster inn et bilde. Dette er ett av båndene i et mangekanals radar
+%   bilde
 img = imread('tm4.png');
 
-a_1 = 1.5;
-b_1 = 0;
-a_2 = 2;
-b_2 = 0;
+gratone_skille = 15;    %Gråtone hvor vi "bytter" lineær mapping
+a = 5;                  %Gain på første del
 
-limit = 30;
+%   Lager transformasjonen
+stykkvisT = [input(1:gratone_skille)*a linspace(input(gratone_skille)*a,255,255-gratone_skille)];
 
-idx = img > 0 & img < 20;
-idx_2 = img > limit+1 & img < 255;
+%   Plotter transformasjonen
+figure(11)
+clf
+plot(input)
+hold on
+plot(stykkvisT,'r')
+ylabel('Input gratone');
+xlabel('Output gratone');
+title('Stykkvis linear transformasjon');
+legend('Indentiy','Stykkvis linear','Location','NW');
 
-img_g = img;
+%   Implementert med LUT
+for x = 1:size(img,1)
+    for y = 1:size(img,2)
+        img_g(x,y)=stykkvisT(img(x,y));
+    end
+end
 
-img_g(idx) = img(idx)*a_1+b_1;
-img_g(idx_2) = img(idx_2)*a_2+b_2;
-%img_g = reshape(img_g,n,m);
-%img_g = img;
-figure(9)
+%   Plot resultatet
+figure(12)
 subplot(221)
 imshow(img,[0 255]);
 title('Original');
-colorbar
 subplot(222)
 imshow(img_g,[0 255])
 title('Etter stykkvis linear mapping');
-colorbar
 subplot(223)
 bar(myHist(uint8(img)));
+xlabel('Gratone');
+ylabel('Antall piksler');
+title('Orginal histogram')
 subplot(224)
 bar(myHist(uint8(img_g)));
+xlabel('Gratone');
+ylabel('Antall piksler');
+title('Histogram etter stykkvis linear mapping')
 
+%%  Bit-plan oppdeling
+%   Her tar vi for oss hvert bit i pikslenes representasjon. Vi bruker her
+%   8 bit. Da har vi feks at 00101010 som er verdien 42. Altså vil verdien 2
+%   kun vises frem om vi ser på plan 1. Vi nummererer lagene som følgende:
+%
+%   0   =   plan 0
+%   1   =   plan 1
+%   0   =   plan 2
+%   1   =   plan 3
+%   0   =   plan 4
+%   1   =   plan 5
+%   0   =   plan 6
+%   0   =   plan 7
 
-%% Bit-plan oppdeling
-
-layer = 7;
+layer = 1; %Velg hvilke bit (0-7)
 for i = 1:n
     for j = 1:m
+        %   Ved en and operasjon kan vi teste om bittet er satt.
+        %   Eks om vi har tallet 42 : 00101010
+        %   vil vi om vi "and'er" dette med 2: 00000010 (2^1 altså plan 1)
+        %   få : 00101010 (and) 00000010 = 1 siden dette bittet er satt i
+        %   plan1.
+        %   For plan 2 får vi: 
+        %   00101010 (and) 00000100 = 0 siden bittet her ikke er satt.
         out(i,j) = bitand(f(i,j),uint8(2^layer));
     end
 end
 
-out = out > 0;
-
-figure(10)
-subplot(221)
+%   Plot resultatet
+figure(13)
+subplot(121)
 imshow(f,[0 2^8]);
-subplot(222)
+title('Original');
+subplot(122)
 imshow(out,[]);
+title(['Bit-plan: ',num2str(layer)]);
