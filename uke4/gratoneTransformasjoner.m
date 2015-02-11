@@ -331,7 +331,7 @@ legend('Identitet','Logaritme','n-te rot','n-te potens','invers logaritme','Loca
 %   slår opp i transformasjonen vår og ser (look up) hvilke intensitet vi
 %   skal ha ut for den aktuelle inngangs intensitete f(x,y). Dette gjøres
 %   for alle x og y.
-for x = 1:m
+for x = 1:n
     for y = 1:m
         g(x,y) = log_t(f(x,y));
     end
