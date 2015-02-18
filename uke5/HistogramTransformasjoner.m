@@ -427,68 +427,47 @@ subplot(326)
 bar(c_n_g)
 
 
-%%  Fargebilder %Fikset frem til hit! 
-%   Laster inn ett RGB fargebilde
+%%  Fargebilder 
+%   Når vi skal histogramutjevne fargebilder må vi være litt obs. 
+%   Et RGB bilde består som kjent av 3 verdier per piksel som angir hvor
+%   "mye" av hver primærfarge R,G eller B pikselet består av. 
+%   Om vi histogramutjevner hver av komponentene vil vi da også endre på
+%   fargesammensetningen, ikke bare kontrasten.
+%
+%   Alternativt kan man bruke HSI (MATLAB kaller det HSV), for å
+%   representere farger. Denne representasjonen består av Hue, som
+%   beskriver hvilke farge, Saturation som beskriver metning eller
+%   "hvithet" i fargen og Intensity (Value) som beskriver gråtonen. Altså
+%   har vi for HSI frikoblet gråtonen fra fargene og vi kan
+%   histogramutjevne på intensitetsveriden.
+%
+%   Laster inn et RGB fargebilde
 img = imread('hane.jpg');
 
+%   Deler inn i R, G og B.
 r = uint8(img(:,:,1));
 g = uint8(img(:,:,2));
 b = uint8(img(:,:,3));
 
-HSI=rgb2hsv(img);
-
+%   Finner histogrammene til hver komponent
 [p,h,c,c_n_r] = myHist(r);
 [p,h,c,c_n_g] = myHist(g);
 [p,h,c,c_n_b] = myHist(b);
-[p,h,c,c_n_i] = myHist(HSI(:,:,3)*255);
-%%
 
-[J T] = histeq(HSI(:,:,3));
-
-h1 = figure(100)
-subplot(221)
-imshow(HSI(:,:,3));
-title('HSI:I value');
-subplot(222)
-imshow(J)
-title('HSI:I value histeq');
-subplot(223)
-imhist(HSI(:,:,3));
-title('Histogram');
-subplot(224)
-imhist(J)
-title('Histogram');%
-%set(gca,'DefaultTextFontSize',18)
-
-
-set(findall(h1,'type','text'),'fontSize',18)
-set(gca(h1),'fontSize',14)
-
-
-HSI_new = HSI;
-HSI_new(:,:,3) = J;
-
-RGB = hsv2rgb(HSI_new);
-
-
-%%
-input = 1:255;
+%   Finner transformasjonen
 T_r = round((G-1)*(c_n_r));
 T_g = round((G-1)*(c_n_g));
 T_b = round((G-1)*(c_n_b));
-T_i = round((G-1)*(c_n_i));
 
-figure(888)
+%   Plotter transformasjonen
+figure(15)
 plot(T_r);
 hold all
 plot(T_g);
 plot(T_b);
-plot(T_i);
+legend('T_r','T_g','T_b');
 
-
-[n,m,dummy] = size(img);
-
-HSI_new = HSI;
+%   Gjør transformasjonene
 for i = 1:n
     for j = 1:m
         if r(i,j) == 0
@@ -508,24 +487,17 @@ for i = 1:n
         else
             b_2(i,j) = T_b(b(i,j));
         end
-        
-        if round(HSI(i,j,3)*255) == 0
-            HSI_new(i,j,3) = T_i(1);
-        else
-            HSI_new(i,j,3) = T_i(round(HSI(i,j,3)*255));
-        end
     end
 end
 
-h1 = figure(1000)
-clf
+%   Viser frem histogram fra RGB før og etter
+h1 = figure(16)
 subplot(211)
 plot(myHist(r),'r','LineWidth',2);
 hold on
 plot(myHist(g),'g','LineWidth',2);
 plot(myHist(b),'b','LineWidth',2);
 title('RGB Histogram');
-
 subplot(212)
 bar(myHist(r_2),'r');
 hold on
@@ -533,138 +505,117 @@ bar(myHist(g_2),'g');
 bar(myHist(b_2),'b');
 title('RGB Histogram');
 
+%   Setter sammen de tre transformerte kanalene
 img_after_rgb_hist(:,:,1) = r_2;
 img_after_rgb_hist(:,:,2) = g_2;
 img_after_rgb_hist(:,:,3) = b_2;
 
+%   I verdien har verdier fra 0 til 1, min implementasjon av histogrammet
+%   forventer fra 0 til 255, så bruker matlabs egen implementasjon for
+%   enkelhets skyld.
+HSI=rgb2hsv(img);
+[J T] = histeq(HSI(:,:,3));
 
-h1 = figure(1001)
+%   Viser frem I verdien fra HSI før og etter ujevning
+h1 = figure(17)
+subplot(221)
+imshow(HSI(:,:,3));
+title('HSI:I value');
+subplot(222)
+imshow(J)
+title('HSI:I value histeq');
+subplot(223)
+imhist(HSI(:,:,3));
+title('Histogram');
+subplot(224)
+imhist(J)
+title('Histogram');
+set(findall(h1,'type','text'),'fontSize',18)
+set(gca(h1),'fontSize',14)
+
+%   Setter sammen HSI til et bilde igjen og konverterer til RGB
+HSI_new = HSI;
+HSI_new(:,:,3) = J;
+RGB = hsv2rgb(HSI_new);
+
+%   Viser frem alle tre bildene, se hvordan fargene har blitt endre ved
+%   histogramutjevning på RGB, men HSI har blitt bedre.
+h1 = figure(18)
 subplot(131)
-imshow(img)
+imshow(img,[])
 title('Original');
 subplot(132)
 imshow(uint8(img_after_rgb_hist),[0 255])
-% band(:,:,1) = histeq(img(:,:,1));
-% band(:,:,2) = histeq(img(:,:,2));
-% band(:,:,3) = histeq(img(:,:,3));
-% imshow(uint8(band))
-
-%imshow(uint8(img_after_rgb_hist),[]);
 title('RGB histeq')
 subplot(133)
-imshow(RGB)
+imshow(RGB,[])
 title('HSI histeq');
-%subplot(144)
-
 set(findall(h1,'type','text'),'fontSize',18)
 set(gca(h1),'fontSize',14)
 
 
-%%
-figure(995)
-clf
-figure(996)
-subplot(211)
-imshow(img,[])
-subplot(212)
-img_copy = img;
-img_copy(:,:,3) = img(:,:,3)*2 + 100;
-imshow(img_copy,[]);
-
-%%
-figure(997)
-imshow(uint8(img_after_rgb_hist),[])
-
-figure(998)
-subplot(211)
-imshow(RGB)
-subplot(212)
-bar(myHist(uint8(HSI_new(:,:,3)*255)));
-
-figure(999)
-bar(myHist(uint8(img_after_rgb_hist(:,:,1))),'r');
-hold on
-bar(myHist(uint8(img_after_rgb_hist(:,:,2))),'g');
-bar(myHist(uint8(img_after_rgb_hist(:,:,3))),'b');
-
-%%
-g = histeq(f);
+%%  Til slutt skal vi se på lokale transformer, også kalt adaptive transformer
+%   I de lokale transformene har vi bestemt oss for et vindu vi lar gli
+%   over hele bildet. Vi finner så en transformasjon basert på det lokale
+%   vinduet som vi bruker til å transfomere senterpikselen i vinduet.
+%   
+%   Vi skal bruke MATLAB sin implementasjon av CLAHE (contrast limited
+%   adaptive histogram equalization) hvor vi "klipper" det ønskede
+%   histogrammet før vi gjør transformasjonen.
+%   Se forelesningsfoilene for mer info.
+%
+%   Vi bruker MATLAB's implementasjon siden en implementasjon med glidende
+%   vindu er noe dere selv skal implementere i Oblig 1 hvor dere skal
+%   implementere konvolusjon.
+g = histeq(f);     %Tar med en "vanlig" histogramutjevnet versjon som referanse
+                   %Videre bruker vi et vindu på 15x15 hvor vi klipper på
+                   %0.01 og velger uniform fordeling.
 g_2 = adapthisteq(f,'NumTiles',[15 15],'ClipLimit',0.01,'Distribution','uniform');
 
-h1 = figure(30)
+%   Viser frem resultatet
+h1 = figure(19)
 subplot(331)
 imshow(f,[0 255]);
 title('Original');
-
-set(findall(h1,'type','text'),'fontSize',18)
 set(gca(h1),'fontSize',14)  
-
 subplot(332)
 imshow(g,[0 255])
 title('Histogramutjevning');
-
-
-set(findall(h1,'type','text'),'fontSize',18)
 set(gca(h1),'fontSize',14)
-
 subplot(333)
 imshow(g_2,[0 255])
 title('CLAHE')
-
-
-set(findall(h1,'type','text'),'fontSize',18)
 set(gca(h1),'fontSize',14)
-
 subplot(334)
 bar(myHist(f))
 title('Histogram');
-
-set(findall(h1,'type','text'),'fontSize',18)
 set(gca(h1),'fontSize',14)
-
 subplot(335)
 bar(myHist(g))
 title('Histogram');
-
-set(findall(h1,'type','text'),'fontSize',18)
 set(gca(h1),'fontSize',14)
-
 subplot(336)
 bar(myHist(g_2))
 title('Histogram');
-
-
-set(findall(h1,'type','text'),'fontSize',18)
 set(gca(h1),'fontSize',14)
-
 subplot(337)
 [p,h,c,c_n] =myHist(f);
 bar(c_n)
-
 title('Kumulativt Histogram');
-
-
-set(findall(h1,'type','text'),'fontSize',18)
 set(gca(h1),'fontSize',14)
-
 subplot(338)
 [p,h,c,c_n] =myHist(g);
 bar(c_n)
 title('Kumulativt Histogram');
-set(findall(h1,'type','text'),'fontSize',18)
 set(gca(h1),'fontSize',14)
-
 subplot(339)
 [p,h,c,c_n] =myHist(g_2);
 bar(c_n)
 title('Kumulativt Histogram');
-
 set(findall(h1,'type','text'),'fontSize',18)
 set(gca(h1),'fontSize',14)
 
-set(findall(h1,'type','text'),'fontSize',18)
-set(gca(h1),'fontSize',14)
-
+%   Ser så på et mindre utsnitt av bildet
 f_zoom = f(110:end-40,115:end-35);
 g_zoom = g(110:end-40,115:end-35);
 g_2_zoom = g_2(110:end-40,115:end-35);
@@ -673,20 +624,18 @@ h1 = figure(31)
 subplot(131)
 imshow(f_zoom,[0 255]);
 title('Original');
-
 subplot(132)
 imshow(g_zoom,[0 255])
 title('Histogramutjevning');
-
 subplot(133)
 imshow(g_2_zoom,[0 255])
 title('CLAHE')
-
 set(findall(h1,'type','text'),'fontSize',18)
 set(gca(h1),'fontSize',14)
 
 
-%%
+%%  Til slutt skal vi se litt mer på CLAHE algoritmen og da særlig
+%   klippingen av det ønskede histogrammet
 
 % Først lager vi oss et ønsket histogram
 % Lager her en Gaus fordeling med følengede verdier
@@ -702,17 +651,7 @@ gauss = gauss/max(gauss);
 gauss_cumsum = cumsum(gauss);
 gauss_cumsum = gauss_cumsum/max(gauss_cumsum);
 
-h1 = figure(5)
-clf
-plot(gauss,'LineWidth',2)
-hold all
-plot(gauss_cumsum,'LineWidth',2)
-legend('Normalisert Gauss','Normalisert kummulativ Gauss','Location','best');
-axis tight
-
-set(findall(h1,'type','text'),'fontSize',18)
-set(gca(h1),'fontSize',14)
-over = 0;s
+over = 0;   %Tom verdi for å telle opp hvor mye "areal" vi klipper
 gauss_2 = gauss;
 for i = 1:length(gauss_2)
    if gauss_2(i) >  0.5
@@ -720,11 +659,14 @@ for i = 1:length(gauss_2)
        gauss_2(i) = 0.5;
    end
 end
-gauss_2 = gauss_2 + over/255;
-% Lager det "kumuliative histogrammet" fra Gaus'en
+gauss_2 = gauss_2 + over/255; %Fordeler "arealet" vi klippet over hele 
+                              %fordelingen
+                              
+%   Lager det "kumuliative histogrammet" fra Gaus'en
 gauss_cumsum_2 = cumsum(gauss_2);
 gauss_cumsum_2 = gauss_cumsum_2/max(gauss_cumsum_2);
 
+%   Viser frem resultatet
 h1 = figure(5)
 clf
 plot(gauss,'LineWidth',2)
@@ -738,3 +680,7 @@ ylim([0 1.5])
 
 set(findall(h1,'type','text'),'fontSize',18)
 set(gca(h1),'fontSize',14)
+
+%   Vi ser at det klippede histogrammet får et kumulativt histogram som er
+%   mindre bratt en fra det originale histogrammet. Dette vil "begrense
+%   kontrasten" og vi gjør dette på alle vinduene får vi CLAHE algoritmen.
