@@ -15,7 +15,7 @@ function [correct] = sjekkKonvolusjonImplementasjon(function_name)
 %   Laster inn et bilde
 I = imread('pout.tif');
 
-disp(['Sjekker din funksjon ',function_name,'() mot imfilter med kernel:\n']);
+disp(['Sjekker din funksjon ',function_name,'() mot imfilter med kernel:']);
 %   Lager en kernel. Bruker her Frei-Chen operatoren
 kernel = [-1 -sqrt(2) -1; 0 0 0; 1 sqrt(2) 1]
 m_res = imfilter(I,kernel,'replicate','conv','same');%Kaller her MATLAB's implementasjon
@@ -27,7 +27,7 @@ else
     disp('Dette gikk ikke bra...')
 end
 
-disp(['Sjekker din funksjon ',function_name,'() mot imfilter med kernel:\n']);
+disp(['Sjekker din funksjon ',function_name,'() mot imfilter med kernel:']);
 kernel = [1 2 0 -2 -1; 4 8 0 -8 -4; 6 12 0 -12 -6; 4 8 0 -8 -4; 1 2 0 -2 -1]
 m_res = imfilter(I,kernel,'replicate','conv','same');%Kaller her MATLAB's implementasjon
 eval(['res = ',function_name,'(I,kernel);'])         %Kaller her deres implementasjon

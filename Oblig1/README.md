@@ -8,7 +8,7 @@ Min implementasjon er i funksjonen myImfilter, og jeg kaller da denne filen slik
 	
 	
 	>> sjekkKonvolusjonImplementasjon('myImfilter');
-	Sjekker din funksjon myImfilter() mot imfilter med kernel:\n
+	Sjekker din funksjon myImfilter() mot imfilter med kernel:
 	
 	kernel =
 	
@@ -17,7 +17,7 @@ Min implementasjon er i funksjonen myImfilter, og jeg kaller da denne filen slik
 	    1.0000    1.4142    1.0000
 	
 	Dette gikk bra...
-	Sjekker din funksjon myImfilter() mot imfilter med kernel:\n
+	Sjekker din funksjon myImfilter() mot imfilter med kernel:
 	
 	kernel =
 	
