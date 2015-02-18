@@ -441,6 +441,9 @@ bar(c_n_g)
 %   har vi for HSI frikoblet gråtonen fra fargene og vi kan
 %   histogramutjevne på intensitetsveriden.
 %
+%   Dere kommer til å lære mer om fargerom og fargebilder i en forelesning 
+%   Fritz holder i mai.
+%
 %   Laster inn et RGB fargebilde
 img = imread('hane.jpg');
 
