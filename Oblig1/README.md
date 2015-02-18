@@ -6,6 +6,7 @@ deres implementasjon mot MATLAB's implementasjon imfilter( ... , ... ,'replicate
 
 Min implementasjon er i funksjonen myImfilter, og jeg kaller da denne filen slik: sjekkKonvolusjonImplementasjon('myImfilter');
 
+'''matlab
 >> sjekkKonvolusjonImplementasjon('myImfilter');
 Sjekker din funksjon myImfilter() mot imfilter med kernel:\n
 
@@ -28,6 +29,7 @@ kernel =
 
 Dette gikk bra...
 ****************  RIKTIG *************************
+'''
 Din implementasjon av konvolusjon virker korrekt.
 
 
