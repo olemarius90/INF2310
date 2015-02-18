@@ -34,4 +34,6 @@ Min implementasjon er i funksjonen myImfilter, og jeg kaller da denne filen slik
 	
 Om din implementasjon ikke er riktig får du beskjed om det.
 
+NB! Denne funksjonen sjekker kun første del, del a, av oblig'en.
+
 Gi beskjed til olemarius@olemarius.net om det er feil eller mangler i koden.
