@@ -403,7 +403,6 @@ set(gca(h1),'fontSize',14)
 %   Legg merke til at vi bruker histeq funksjonen, ikke imhismatch som
 %   krever to innbilder som input.
 g = histeq(f,gauss);
-figure;bar(gauss*n*m)
 
 %   Vi ser at resultatene er like, men at matlab har fått et noe annerledes
 %   resultat. De har nok en noe mer sofistikert implementasjon, og finner
@@ -470,6 +469,7 @@ plot(T_g);
 plot(T_b);
 legend('T_r','T_g','T_b');
 
+[n,m, dummy] = size(img)
 %   Gjør transformasjonene
 for i = 1:n
     for j = 1:m
