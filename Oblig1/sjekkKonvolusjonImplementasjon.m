@@ -20,6 +20,11 @@ disp(['Sjekker din funksjon ',function_name,'() mot imfilter med kernel:']);
 kernel = [-1 -sqrt(2) -1; 0 0 0; 1 sqrt(2) 1]
 m_res = imfilter(I,kernel,'replicate','conv','same');%Kaller her MATLAB's implementasjon
 eval(['res = ',function_name,'(I,kernel);'])%Kaller her deres implementasjon
+
+if size(res) ~= size(I)
+    error('Utbildet fra din funksjon har ikke samme størrelse som innbildet');
+end
+
 correct1 = sum(sum(uint8(res)-m_res)) == 0; %Sammenligner resultatene
 if correct1
     disp('Dette gikk bra...');
@@ -31,6 +36,11 @@ disp(['Sjekker din funksjon ',function_name,'() mot imfilter med kernel:']);
 kernel = [1 2 0 -2 -1; 4 8 0 -8 -4; 6 12 0 -12 -6; 4 8 0 -8 -4; 1 2 0 -2 -1]
 m_res = imfilter(I,kernel,'replicate','conv','same');%Kaller her MATLAB's implementasjon
 eval(['res = ',function_name,'(I,kernel);'])         %Kaller her deres implementasjon
+
+if size(res) ~= size(I)
+    error('Utbildet fra din funksjon har ikke samme størrelse som innbildet');
+end
+
 correct2 = sum(sum(uint8(res)-m_res)) == 0;          %Sammenligner resultatene
 if correct2
     disp('Dette gikk bra...');
