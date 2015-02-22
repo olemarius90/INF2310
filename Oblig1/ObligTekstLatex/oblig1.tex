@@ -1,0 +1,145 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+%\usepackage[T1]{fontenc}
+\usepackage[norsk]{babel}
+\usepackage{textcomp,varioref,amsmath,listings,amssymb}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{hyperref}
+
+\lstset{
+  frame=single,                   % adds a frame around the code
+}
+
+\title{Obligatorisk oppgave 1}
+\author{INF2310 \\ Vår 2015}
+
+\begin{document}
+\maketitle{}
+
+%\section*{Step A : Analyzing the textures}
+
+\textbf{Dette oppgavesettet er på tre sider og består av én bildebehandlingsoppgave.}
+\\
+\\
+Besvarelsen av denne og neste obligatoriske oppgave må være godkjent for at du skal
+få anledning til å gå opp til endelig skriftlig eksamen i kurset.
+Besvarelsene kan utarbeides i smågrupper på opptil to studenter, men det er ikke
+noe i veien for å arbeide alene. Studenter i samme smågruppe kan levere identisk
+besvarelse, men samarbeidet må framgå av navnene på forsiden av besvarelsen.\\
+\\
+Av side 1 skal det fremgå hvem som har utarbeidet besvarelsen.
+\\
+\\
+Det forventes at arbeidet er et resultat av egen innsats.
+Å utgi andres arbeid for sitt eget er uetisk og kan medføre sterke reaksjoner fra IFIs
+side. Se \href{http://www.mn.uio.no/ifi/studier/admin/obliger/}{http://www.mn.uio.no/ifi/studier/admin/obliger/}.
+Den skriftlige rapporten leveres primært som en PDF-fil som inneholder hele
+besvarelsen, med figurer og bilder. Kode skal leveres i tillegg til PDF-filen.
+Besvarelsen skal leveres via \href{http://devilry.ifi.uio.no}{http://devilry.ifi.uio.no}. 
+Følgende er viktig:
+
+\begin{itemize}
+\item Alle filene må lastes opp hver gang man skal levere.
+\item PDF-filen skal ha følgende navn: \textbf{inf2310-oblig1-brukernavn.pdf}.
+\item Oppgaven skal kunne kjøres fra MATLAB- eller Python-scripts med navn:
+\textbf{oppgave1.m} eller \textbf{oppgave1.py} (eventuelt \textbf{oppgave1a.m} osv.).
+\item Spørsmål angående innlevering kan sendes til \\\textbf{magnuval@student.matnat.uio.no}.
+\end{itemize}
+
+Bildene det refereres til vil være å finne under:\\
+\href{http://www.uio.no/studier/emner/matnat/ifi/INF2310/v15/undervisningsmateriale/bilder/}{http://www.uio.no/studier/emner/matnat/ifi/INF2310/v15/undervisningsmateriale/bilder/}
+~
+\\ 
+~
+\\
+Oppgaven utleveres mandag 23. februar 2015.\\
+Innleveringsfrist er mandag 16. mars 2015.
+
+\newpage
+
+\section*{Oppgave 1: Detektering av cellekjerner}
+\textit{Viktig: Dere skal her programmere hele Cannys algoritme “fra bunnen av”, altså
+ikke bruke andres implementasjon for verken Cannys algoritme eller noen av dets
+bestanddeler, inkludert utvidelsen av inn-bildet, alle filtreringene, tynningen av
+gradientmagnitudebildet og hysterese-tersklingen.}
+\\
+
+Du skal i denne oppgaven detektere kanten til cellekjernene i bildet \\\textbf{cellekjerner.png}.
+Dette bildet er et lysmikroskopibilde av DNA-fargede cellekjerner i et tynt snitt av
+svulsten til en prostatakreftpasient. Deteksjon av cellekjernene er nødvendig for å
+kunne separat analysere cellekjernene for å f.eks. avgjøre aggressiviteten til
+kreftsvulsten, noe som er viktig for å kunne bestemme hvor kraftig etterbehandling
+pasienten bør bli utsatt for.
+\subsection*{a)}
+Programmèr en generell implementasjon av konvolusjon av et bilde med et
+konvolusjonsfilter. Du kan anta at naboskapet er rektangulært med odde
+lengder og har origo i senterpikselen. Ut-bildet skal ha samme størrelse som
+inn-bildet og bilderandproblemet skal bli behandlet ved å utvide inn-bildet med
+nærmeste pikselverdi.
+\subsubsection*{Tips:}
+Det er skrevet en testfunksjon som tester din implementasjon av konvolusjon mot MATLAB's implementasjon av funksjonen
+\textbf{imfilter}. Testfunksjonen, samt beskrivelse av hvordan du bruker den, ligger på \\
+\href{http://github.com/olemarius90/INF2310/tree/master/Oblig1}{http://github.com/olemarius90/INF2310/tree/master/Oblig1}.
+
+\subsection*{b)} 
+Implementèr Cannys algoritme. Bruk et ekte Gauss-filter slik som det er
+definert på side 41 i notatet til den første filtreringsforelesningen. Altså, bruk formelen
+til å regne ut verdiene, ikke en tilnærming slik som f.eks. på den påfølgende siden i samme
+notat. Bruk den symmetriske 1D-operatoren til å estimere gradientene og benytt 8-tilkobling i
+hysterese-tersklingen. For å tynne gradientmagnituden skal du benytte metoden
+i notatet til den andre filtreringsforelesningen. Dette er også er beskrevet i
+læreboka (DIP, Gonzales og Woods) på side 720-722. Kort fortalet er metoden for hysterese-tersknlingen
+at man går igjennom hver piksel i gradientmagnitudebildet og setter verdien til 0 dersom minst én av 
+de to 8-naboene i eller mot gradientretningen har større gradientmagnitude.
+
+Siste del av Cannys algortime er definere to threshold \textbf{Th} og \textbf{Tl} for å 
+analysere, finne og sette sammen kanter. Dette er, som resten av algortimen, beskrevet i 
+forelesningsfoilene og i læreboka (DIP, Gonzales og Woods) på side ...
+
+\subsubsection*{Tips:}
+\begin{itemize}
+\item[1.] For å tilpasse Gauss-filterets størrelse til parameteren \textit{sigma} kan du sette
+hver lengde av filteret som én pluss 8 ganger \textit{sigma} rundet opp til
+nærmeste heltall. I prinsippet er Gauss-filterets størrelse ubegrenset, men
+verdiene til h(x,y) utenfor det angitte området er så liten at det ikke har
+noen markant praktisk betydning å kutte ut disse.
+\item[2.] Benytt implementasjon din fra a) til Gauss-filtrering og estimering av
+gradientene.
+\item[3.] Det er selvsagt tillatt å benytte andres implementasjoner for avrunding
+og for beregning av kvadratrot og tangens invers, f.eks. MATLAB funksjonene
+\textbf{ceil}, \textbf{sqrt} og \textbf{atan}.
+\end{itemize}
+
+\subsection*{c)}
+Anvend din implementasjon av Cannys algoritme på bildet \textbf{cellekjerner.png}.
+Eksperimenter med parameterne \textbf{sigma}, \textbf{Th} og \textbf{Tl} til du har funnet noen
+verdier som gir et resultatbilde med flest mulig av kantene til cellekjernene og
+færrest mulig andre kanter.
+\\
+
+Bildet \textbf{detekterte\_kanter.png} viser et mulig resultatbilde, 
+men det er på ingen måte en fasit. Det er godt mulig du vil få et enda bedre resultat ved å bruke
+andre parameterverdier!
+
+
+\subsubsection*{Tips:} For å sammenligne forskjellige parameterverdier er det lurt å
+normalisere gradientmagnituden slik at maksimalverdien er 1.
+\\
+
+Du kan benytte andres implementasjoner, f.eks. MATLAB-funksjonene \textbf{imread} og
+\textbf{imwrote}, for å lese/skrive fra/til fil.
+
+\subsection*{Hva skal leveres:}
+\begin{itemize}
+\item[I.] Tekstlig beskrivelse av implementeringene i a) og b).
+\item[II.] Resultatbildet med tilhørende parameterverdier i c).
+\item[III.] Drøfting av resultatbildet, inkludert hva som kjennetegner det metoden er bra
+på og det metoden ikke er bra på, samt hvordan dette blir påvirket av å endre
+parameterverdiene.
+\item[IV.] Programkode.
+\end{itemize}
+Lykke til!
+\end{document}
+    
