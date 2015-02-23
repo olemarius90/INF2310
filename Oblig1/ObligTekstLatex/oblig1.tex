@@ -7,18 +7,25 @@
 \usepackage{graphicx}
 \usepackage{epstopdf}
 \usepackage{hyperref}
+\usepackage[pdftex]{geometry}
+
 
 \lstset{
   frame=single,                   % adds a frame around the code
 }
 
+\geometry{
+  top=4cm,
+  bottom=3cm
+}
+
+
 \title{Obligatorisk oppgave 1}
 \author{INF2310 \\ Vår 2015}
 
+
 \begin{document}
 \maketitle{}
-
-%\section*{Step A : Analyzing the textures}
 
 \textbf{Dette oppgavesettet er på tre sider og består av én bildebehandlingsoppgave.}
 \\
@@ -29,12 +36,12 @@ Besvarelsene kan utarbeides i smågrupper på opptil to studenter, men det er ik
 noe i veien for å arbeide alene. Studenter i samme smågruppe kan levere identisk
 besvarelse, men samarbeidet må framgå av navnene på forsiden av besvarelsen.\\
 \\
-Av side 1 skal det fremgå hvem som har utarbeidet besvarelsen.
+Av forsiden skal det fremgå hvem som har utarbeidet besvarelsen.
 \\
 \\
 Det forventes at arbeidet er et resultat av egen innsats.
 Å utgi andres arbeid for sitt eget er uetisk og kan medføre sterke reaksjoner fra IFIs
-side. Se \href{http://www.mn.uio.no/ifi/studier/admin/obliger/}{http://www.mn.uio.no/ifi/studier/admin/obliger/}.
+side. Se \\\href{http://www.mn.uio.no/ifi/studier/admin/obliger/}{http://www.mn.uio.no/ifi/studier/admin/obliger/}.
 Den skriftlige rapporten leveres primært som en PDF-fil som inneholder hele
 besvarelsen, med figurer og bilder. Kode skal leveres i tillegg til PDF-filen.
 Besvarelsen skal leveres via \href{http://devilry.ifi.uio.no}{http://devilry.ifi.uio.no}. 
@@ -54,8 +61,8 @@ Bildene det refereres til vil være å finne under:\\
 \\ 
 ~
 \\
-Oppgaven utleveres mandag 23. februar 2015.\\
-Innleveringsfrist er mandag 16. mars 2015.
+Oppgaven utleveres \textbf{mandag 23. februar 2015}.\\
+Innleveringsfrist er \textbf{mandag 16. mars 2015}.
 
 \newpage
 
@@ -90,18 +97,21 @@ til å regne ut verdiene, ikke en tilnærming slik som f.eks. på den påfølgen
 notat. Bruk den symmetriske 1D-operatoren til å estimere gradientene og benytt 8-tilkobling i
 hysterese-tersklingen. For å tynne gradientmagnituden skal du benytte metoden
 i notatet til den andre filtreringsforelesningen. Dette er også er beskrevet i
-læreboka (DIP, Gonzales og Woods) på side 720-722. Kort fortalet er metoden for hysterese-tersknlingen
+læreboka (DIP, Gonzalez og Woods) på side 720-723. Kort fortalet er metoden for hysterese-tersknlingen
 at man går igjennom hver piksel i gradientmagnitudebildet og setter verdien til 0 dersom minst én av 
 de to 8-naboene i eller mot gradientretningen har større gradientmagnitude.
 
-Siste del av Cannys algortime er definere to threshold \textbf{Th} og \textbf{Tl} for å 
-analysere, finne og sette sammen kanter. Dette er, som resten av algortimen, beskrevet i 
-forelesningsfoilene og i læreboka (DIP, Gonzales og Woods) på side ...
+Siste del av Cannys algortime er å gå gjennom kantene som er funnnet sålangt for å analysere
+og sette sammen hva som er ``ekte'' kanter. Dette gjøres ved å definere to threshold \textbf{Th} og \textbf{Tl} 
+for å finne \textit{sterke} og \textit{svake} kanter. Dette beskrives på side 722 i læreboka, 
+samt i foilene.
+\textbf{NB!} Oppgaveteksten er ikke en fullstendig beskrivelse av Cannys algortime. Du må lese 
+forelesningsfoilene og/eller boka!
 
 \subsubsection*{Tips:}
 \begin{itemize}
-\item[1.] For å tilpasse Gauss-filterets størrelse til parameteren \textit{sigma} kan du sette
-hver lengde av filteret som én pluss 8 ganger \textit{sigma} rundet opp til
+\item[1.] For å tilpasse Gauss-filterets størrelse til parameteren \textbf{sigma} kan du sette
+hver lengde av filteret som én pluss 8 ganger \textbf{sigma} rundet opp til
 nærmeste heltall. I prinsippet er Gauss-filterets størrelse ubegrenset, men
 verdiene til h(x,y) utenfor det angitte området er så liten at det ikke har
 noen markant praktisk betydning å kutte ut disse.
