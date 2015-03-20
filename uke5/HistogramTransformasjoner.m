@@ -206,7 +206,7 @@ bar(c_n)
 %   histogrammet for å lage transformasjonen, Tg(i), som histogramutjevner
 %   det ønskede histogrammet.
 %   Steg 3 : Finn så inverstransformen til Tg(i) og inverstransformerer
-%   innbildet til det ønskede histogrammet.
+%   det histogramutjevnede innbildet til det ønskede histogrammet.
 %
 %   Altså, må det orginale bildet først histogramutjevnes, før det
 %   histogramutjevnede bildet transformeres med inverstransformen til det 
