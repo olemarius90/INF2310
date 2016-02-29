@@ -25,7 +25,7 @@ if size(res) ~= size(I)
     error('Utbildet fra din funksjon har ikke samme størrelse som innbildet');
 end
 
-correct1 = sum(sum(res-m_res)) < 1e-10; %Sammenligner resultatene
+correct1 = abs(sum(sum(res-m_res))) < 1e-10; %Sammenligner resultatene
 if correct1
     disp('Dette gikk bra...');
 else
@@ -41,7 +41,7 @@ if size(res) ~= size(I)
     error('Utbildet fra din funksjon har ikke samme størrelse som innbildet');
 end
 
-correct2 = sum(sum(res-m_res)) < 1e-10;          %Sammenligner resultatene
+correct2 = abs(sum(sum(res-m_res))) < 1e-10;          %Sammenligner resultatene
 if correct2
     disp('Dette gikk bra...');
 else
