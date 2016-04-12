@@ -1,6 +1,6 @@
-function [img] = sinusImage(M,N,u,v,A)
-%SINUSIMAGE Summary of this function goes here
-%   Detailed explanation goes here
+function [img] = cosinusImage(M,N,u,v,A)
+%COSINUSIMAGE
+
 x = linspace(0,M-1,M);
 y = linspace(0,N-1,N);
 img = zeros(N,M);
